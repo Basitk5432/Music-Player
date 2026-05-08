@@ -23,18 +23,19 @@ A sleek, modern, and high-performance music player for Android built with **Kotl
   <img src="https://github.com/user-attachments/assets/b5ae1ce3-d8d9-4b3b-b38d-8443656ce015" width="22%" />
 </p>
 
-
 ## 📦 Installation
-1. Clone the repository:
-   ```bashclone [https://github.com/Basitk5432/Music-Player.git](https://github.com/Basitk5432/Music-Player.git)**Clone the repository:
+
+1. **Clone the repository:**
    ```bash
    git clone [https://github.com/Basitk5432/Music-Player.git](https://github.com/Basitk5432/Music-Player.git)
-Open the project in Android Studio.
+Open the project:
+Open Android Studio, click on "Open" and select the project folder.
 
+Sync and Run:
 Sync Gradle and run the app on an emulator or physical device.
 
 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
 📝 License
-This project is MIT licensed.**
+This project is MIT licensed.
