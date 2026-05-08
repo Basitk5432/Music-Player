@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
     private var musicService: MusicService? = null
     private var isBound = false
 
+    // ✅ serviceConnection is back as a proper object
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MusicService.MusicBinder
@@ -51,9 +52,14 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
             musicService?.listener = this@MainActivity
 
             val index = musicService?.currentSongIndex ?: -1
-            if (index >= 0 && PlayerActivity.songsList.isNotEmpty()) {
-                val song = PlayerActivity.songsList.getOrNull(index)
+            val isPlaying = musicService?.isPlaying() ?: false
+
+            if (index >= 0 && isPlaying) {
+                val song = songList.getOrNull(index)
+                    ?: musicService?.songsList?.getOrNull(index)
                 if (song != null) updateMiniPlayer(song)
+            } else {
+                miniPlayer.visibility = View.GONE
             }
         }
 
@@ -84,6 +90,9 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
         miniPlayPause = findViewById(R.id.miniPlayPause)
         miniNext = findViewById(R.id.miniNext)
 
+        // Hide mini player by default on fresh start
+        miniPlayer.visibility = View.GONE
+
         adapter = SongAdapter(songList) { song, index ->
             etSearch.setText("")
             PlayerActivity.songsList = ArrayList(songList)
@@ -109,14 +118,13 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
 
         miniPlayPause.setOnClickListener {
             val currentlyPlaying = musicService?.isPlaying() ?: false
-            val nextPlayingState = !currentlyPlaying
-
             miniPlayPause.setImageResource(
-                if (nextPlayingState) android.R.drawable.ic_media_pause
+                if (!currentlyPlaying) android.R.drawable.ic_media_pause
                 else android.R.drawable.ic_media_play
             )
             musicService?.playPause()
         }
+
         miniNext.setOnClickListener {
             musicService?.nextSong()
         }
@@ -135,21 +143,20 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
 
     override fun onSongChanged(index: Int) {
         runOnUiThread {
-            val song = PlayerActivity.songsList.getOrNull(index) ?: return@runOnUiThread
+            val song = songList.getOrNull(index) ?: return@runOnUiThread
             updateMiniPlayer(song)
         }
     }
 
     override fun onPlaybackStateChanged(isPlaying: Boolean) {
         runOnUiThread {
-            val song = PlayerActivity.songsList.getOrNull(PlayerActivity.currentIndex)
-                ?: return@runOnUiThread
+            val index = musicService?.currentSongIndex ?: return@runOnUiThread
+            val song = songList.getOrNull(index) ?: return@runOnUiThread
             updateMiniPlayer(song)
         }
     }
 
-    override fun showSongListSheet() {
-    }
+    override fun showSongListSheet() {}
 
     private fun updateMiniPlayer(song: SongModel) {
         miniPlayer.visibility = View.VISIBLE
@@ -177,11 +184,26 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
             adapter.notifyDataSetChanged()
         }
 
-        musicService?.let {
-            it.listener = this
-            val index = it.currentSongIndex
-            val song = PlayerActivity.songsList.getOrNull(index)
-            if (song != null) updateMiniPlayer(song)
+        if (isBound && musicService != null) {
+            musicService!!.listener = this
+            val index = musicService!!.currentSongIndex
+            val isPlaying = musicService!!.isPlaying()
+
+            if (isPlaying || (index >= 0 && musicService!!.songsList.isNotEmpty())) {
+                if (songList.isEmpty()) songList.addAll(musicService!!.songsList)
+                val song = songList.getOrNull(index)
+                if (song != null) {
+                    updateMiniPlayer(song)
+                    miniPlayPause.setImageResource(
+                        if (isPlaying) android.R.drawable.ic_media_pause
+                        else android.R.drawable.ic_media_play
+                    )
+                }
+            } else {
+                miniPlayer.visibility = View.GONE
+            }
+        } else {
+            miniPlayer.visibility = View.GONE
         }
     }
 
@@ -209,11 +231,8 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
             ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
 
-        if (notGranted.isEmpty()) {
-            loadSongs()
-        } else {
-            requestPermissionLauncher.launch(notGranted.toTypedArray())
-        }
+        if (notGranted.isEmpty()) loadSongs()
+        else requestPermissionLauncher.launch(notGranted.toTypedArray())
     }
 
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
@@ -227,9 +246,7 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
 
     private fun getAllSongs(): List<SongModel> {
         val list = mutableListOf<SongModel>()
-
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
@@ -238,7 +255,6 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.ALBUM_ID
         )
-
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
         val sortOrder = "${MediaStore.Audio.Media.TITLE} ASC"
 
