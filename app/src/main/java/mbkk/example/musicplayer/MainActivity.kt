@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity(), MusicPlayerListener {
     private var musicService: MusicService? = null
     private var isBound = false
 
-    // ✅ serviceConnection is back as a proper object
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MusicService.MusicBinder
