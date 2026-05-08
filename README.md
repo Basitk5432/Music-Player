@@ -1,4 +1,3 @@
-<img width="738" height="1600" alt="WhatsApp Image 2026-05-08 at 11 22 29 AM (1)" src="https://github.com/user-attachments/assets/b5ae1ce3-d8d9-4b3b-b38d-8443656ce015" />
 # Music Player App 🎵
 
 A sleek, modern, and high-performance music player for Android built with **Kotlin** and **XML**. This app provides a seamless audio experience with a focus on clean UI and smooth navigation.
@@ -17,8 +16,13 @@ A sleek, modern, and high-performance music player for Android built with **Kotl
 * **Audio Engine:** MediaPlayer API / ExoPlayer
 
 ## 📸 Screenshots
-<img width="738" height="1600" alt="WhatsApp Image 2026-05-08 at 11 22 29 AM (2)" src="https://github.com/user-attachments/assets/b58aa47a-01c7-4c18-b307-5f882232d45c" /><img width="738" height="1600" alt="WhatsApp Image 2026-05-08 at 11 22 30 AM" src="https://github.com/user-attachments/assets/d768de91-3dcc-408e-b1fa-aa159d98a47f" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-05-08 at 11 22 29 AM" src="https://github.com/user-attachments/assets/51778745-767d-49b2-b3cf-b724e660466c" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d768de91-3dcc-408e-b1fa-aa159d98a47f" width="22%" />
+  <img src="https://github.com/user-attachments/assets/b58aa47a-01c7-4c18-b307-5f882232d45c" width="22%" />
+  <img src="https://github.com/user-attachments/assets/51778745-767d-49b2-b3cf-b724e660466c" width="22%" />
+  <img src="https://github.com/user-attachments/assets/b5ae1ce3-d8d9-4b3b-b38d-8443656ce015" width="22%" />
+</p>
+
 
 ## 📦 Installation
 1. Clone the repository:
